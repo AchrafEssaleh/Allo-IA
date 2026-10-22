@@ -1,0 +1,12 @@
+#env py
+.venv/
+__pycache__/
+
+#jupyter
+.ipynb_checkpoints/
+
+#data personnelles enregistrements & transcriptions
+data/
+ù
+# Fichiers système
+.DS_Store

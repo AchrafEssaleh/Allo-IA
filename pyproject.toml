@@ -1,0 +1,16 @@
+[project]
+name = "allo-ia"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "faster-whisper>=1.2.1",
+    "jiwer>=4.0.0",
+    "pandas>=3.0.6",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+]
