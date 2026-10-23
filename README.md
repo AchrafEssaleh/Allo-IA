@@ -1,4 +1,4 @@
-# Allo IA
+# Allo IA (ONGOING)
 
 
 Voice first AI agent that turns spoken conversations into FabLab project documentation, running fully offline on low cost hardware.
