@@ -1,0 +1,9 @@
+We built a small automatic plant-watering system for a FabLab.
+It uses an Arduino, a soil-moisture sensor, a water pump, and
+a relay. The sensor measures the soil moisture, and the Arduino
+activates the pump when the soil becomes too dry.
+
+We tested it with a plant in a pot. The pump worked, but we
+noticed that the sensor readings sometimes fluctuated.
+We haven't yet determined the best threshold or tested the
+system over several weeks.
