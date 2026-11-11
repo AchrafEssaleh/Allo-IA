@@ -60,18 +60,17 @@ These outputs provide an example of the agent's current results and can be used 
    pip install -r requirements.txt
    ```
 
-3. Set the ILaaS API key as an enviroment variable in your terminal:
+3. Set the ILaaS API key as an enviroment variable in a .env file:
 
-   ```bash
-   export ILAAS_API_KEY="the api key given by mr Baptiste for the inference service"
-   ```
+   ILAAS_API_KEY="the api key given by mr Baptiste for the ilaas inference service"
+   
 
 ## Running the project
 
-Run the documentation agent:
+Run the documentation agent: (put the name of the file containing the description as the argument)
 
 ```bash
-python main.py project_description.txt
+python main.py example_description.txt
 ```
 
 Test the ILaaS API and show the available models:

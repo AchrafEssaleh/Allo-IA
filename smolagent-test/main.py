@@ -5,6 +5,9 @@ import re
 import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from smolagents import (
     OpenAIModel,
@@ -27,16 +30,16 @@ from reportlab.platypus import (
 )
 
 
-OUTPUT_DIR = Path("output")
+OUTPUT_DIR = Path("test_output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 ILAAS_MODEL_ID = "qwen-3.6-35b-instruct"
 
 
-def create_agent():
+def create_agent(model_id=ILAAS_MODEL_ID):
     """Create the documentation agent."""
     model = OpenAIModel(
-        model_id=ILAAS_MODEL_ID,
+        model_id=model_id,
         api_base="https://llm.ilaas.fr/v1",
         api_key=os.environ["ILAAS_API_KEY"],
         temperature=0.2,
@@ -44,10 +47,7 @@ def create_agent():
     )
 
     return ToolCallingAgent(
-        tools=[
-            WebSearchTool(max_results=5),
-            VisitWebpageTool(max_output_length=10000),
-        ],
+        tools=[],
         model=model,
         max_steps=8,
         instructions="""
@@ -76,55 +76,94 @@ Return ONLY valid JSON with this structure:
       "heading": "Objectives",
       "content": "Paragraph one.\\n\\nParagraph two."
     }
-  ],
-  "references": [
-    {
-      "title": "Source title",
-      "url": "https://example.com"
-    }
   ]
 }
+
+JSON formatting rules:
+- Return strictly valid JSON.
+- Escape newline characters inside strings using \\n.
+- Escape quotation marks inside strings.
+- Do not use Markdown code fences.
+- Do not include explanations before or after the JSON.
 
 Include relevant sections such as:
 Objectives, Context and problem, Materials and tools,
 Technical choices, Procedure, Difficulties and solutions,
 Results and tests, Possible improvements, and Missing information.
 
-Only include references actually consulted. If web research was
-not needed, return an empty references list.
 """,
     )
 
 
 def parse_agent_output(raw_output):
-    """Parse the JSON returned by the agent."""
+    """Parse and validate the JSON returned by the agent."""
+
     text = str(raw_output).strip()
 
-    # Accommodate models that wrap JSON in Markdown code fences.
+    # Remove Markdown code fences.
     text = re.sub(r"^```(?:json)?\s*", "", text)
     text = re.sub(r"\s*```$", "", text)
 
+    # Extract the JSON object if additional text is present.
+    start = text.find("{")
+    end = text.rfind("}")
+
+    if start == -1 or end == -1:
+        raise ValueError("No JSON object found in agent output.")
+
+    text = text[start:end + 1]
+
     try:
         data = json.loads(text)
-    except json.JSONDecodeError:
-        # Fallback if the model added text before or after the JSON.
-        start = text.find("{")
-        end = text.rfind("}")
-        if start == -1 or end == -1:
-            raise ValueError(
-                "The agent did not return valid JSON. "
-                "Try again or inspect the raw output."
-            )
-        data = json.loads(text[start:end + 1])
 
-    # Basic validation before creating files.
+    except json.JSONDecodeError as error:
+        # Retry by escaping literal control characters
+        # occurring inside JSON strings.
+        repaired = []
+        inside_string = False
+        escaped = False
+
+        for char in text:
+            if escaped:
+                repaired.append(char)
+                escaped = False
+                continue
+
+            if char == "\\" and inside_string:
+                repaired.append(char)
+                escaped = True
+                continue
+
+            if char == '"':
+                inside_string = not inside_string
+                repaired.append(char)
+                continue
+
+            if inside_string and ord(char) < 32:
+                repaired.append({
+                    "\n": r"\n",
+                    "\r": r"\r",
+                    "\t": r"\t",
+                }.get(char, " "))
+            else:
+                repaired.append(char)
+
+        try:
+            data = json.loads("".join(repaired))
+        except json.JSONDecodeError:
+            raise error
+
+    if not isinstance(data, dict):
+        raise ValueError("Agent output must be a JSON object.")
+
     if not isinstance(data.get("sections"), list):
         raise ValueError("Agent output has no valid 'sections' list.")
 
     data.setdefault("title", "Technical project notebook")
     data.setdefault("summary", "")
-    data.setdefault("references", [])
+
     return data
+
 
 
 def create_docx(data, path):
@@ -153,13 +192,6 @@ def create_docx(data, path):
                 doc.add_paragraph(line[2:], style="List Bullet")
             else:
                 doc.add_paragraph(line)
-
-    if data["references"]:
-        doc.add_heading("References", level=1)
-        for ref in data["references"]:
-            title = ref.get("title", "Source")
-            url = ref.get("url", "")
-            doc.add_paragraph(f"{title} — {url}")
 
     doc.save(path)
 
@@ -220,22 +252,12 @@ def create_pdf(data, path):
                 ))
                 story.append(Spacer(1, 5))
 
-    if data["references"]:
-        story.append(Paragraph("References", styles["SectionHeading"]))
-        for ref in data["references"]:
-            title = escape(ref.get("title", "Source"))
-            url = escape(ref.get("url", ""))
-            story.append(Paragraph(
-                f"{title} — {url}", styles["BodyText"]
-            ))
-            story.append(Spacer(1, 4))
-
     pdf.build(story)
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python smolagent_test.py project_description.txt")
+        print("Usage: python smolagent_test.py example_description.txt")
         sys.exit(1)
 
     description_path = Path(sys.argv[1])
@@ -246,18 +268,17 @@ def main():
     if not description:
         sys.exit("The project description is empty.")
 
-    agent = create_agent()
+    agent = create_agent(model_id=ILAAS_MODEL_ID)
 
     task = f"""
-Create a technical project notebook from the description below.
+    Create a technical project notebook from the description below.
 
-Use web research only if it adds useful technical information.
-Do not fill gaps with guesses. List important missing information
-explicitly in the documentation.
+    Do not fill gaps with guesses. List important missing information
+    explicitly in the documentation.
 
-PROJECT DESCRIPTION:
-{description}
-"""
+    PROJECT DESCRIPTION:
+    {description}
+    """
 
     print("Generating documentation...")
     raw_output = agent.run(task)

@@ -1,0 +1,115 @@
+{
+    "benchmark_date": "2026-11-11T17:38:23.936704+00:00",
+    "total_models": 6,
+    "total_descriptions": 1,
+    "models": [
+        {
+            "model_id": "gemma-4-31b",
+            "output_directory": "benchmark_outputs/gemma-4-31b_outputs",
+            "total_descriptions": 1,
+            "successful_generations": 1,
+            "failed_generations": 0,
+            "average_generation_time_seconds": 13.919,
+            "results": [
+                {
+                    "description": "example_description.txt",
+                    "status": "success",
+                    "generation_time_seconds": 13.919,
+                    "parse_error": null,
+                    "error": null,
+                    "pdf_path": "benchmark_outputs/gemma-4-31b_outputs/example_description_documentation.pdf"
+                }
+            ]
+        },
+        {
+            "model_id": "llama-3.1-8b",
+            "output_directory": "benchmark_outputs/llama-3_1-8b_outputs",
+            "total_descriptions": 1,
+            "successful_generations": 1,
+            "failed_generations": 0,
+            "average_generation_time_seconds": 8.922,
+            "results": [
+                {
+                    "description": "example_description.txt",
+                    "status": "success",
+                    "generation_time_seconds": 8.922,
+                    "parse_error": null,
+                    "error": null,
+                    "pdf_path": "benchmark_outputs/llama-3_1-8b_outputs/example_description_documentation.pdf"
+                }
+            ]
+        },
+        {
+            "model_id": "mistral-medium-latest",
+            "output_directory": "benchmark_outputs/mistral-medium-latest_outputs",
+            "total_descriptions": 1,
+            "successful_generations": 1,
+            "failed_generations": 0,
+            "average_generation_time_seconds": 20.247,
+            "results": [
+                {
+                    "description": "example_description.txt",
+                    "status": "success",
+                    "generation_time_seconds": 20.247,
+                    "parse_error": null,
+                    "error": null,
+                    "pdf_path": "benchmark_outputs/mistral-medium-latest_outputs/example_description_documentation.pdf"
+                }
+            ]
+        },
+        {
+            "model_id": "mistral-small-4-119b",
+            "output_directory": "benchmark_outputs/mistral-small-4-119b_outputs",
+            "total_descriptions": 1,
+            "successful_generations": 1,
+            "failed_generations": 0,
+            "average_generation_time_seconds": 17.823,
+            "results": [
+                {
+                    "description": "example_description.txt",
+                    "status": "success",
+                    "generation_time_seconds": 17.823,
+                    "parse_error": null,
+                    "error": null,
+                    "pdf_path": "benchmark_outputs/mistral-small-4-119b_outputs/example_description_documentation.pdf"
+                }
+            ]
+        },
+        {
+            "model_id": "qwen-3.6-35b-instruct",
+            "output_directory": "benchmark_outputs/qwen-3_6-35b-instruct_outputs",
+            "total_descriptions": 1,
+            "successful_generations": 1,
+            "failed_generations": 0,
+            "average_generation_time_seconds": 6.02,
+            "results": [
+                {
+                    "description": "example_description.txt",
+                    "status": "success",
+                    "generation_time_seconds": 6.02,
+                    "parse_error": null,
+                    "error": null,
+                    "pdf_path": "benchmark_outputs/qwen-3_6-35b-instruct_outputs/example_description_documentation.pdf"
+                }
+            ]
+        },
+        {
+            "model_id": "qwen-3.8-27b",
+            "output_directory": "benchmark_outputs/qwen-3_8-27b_outputs",
+            "total_descriptions": 1,
+            "successful_generations": 1,
+            "failed_generations": 0,
+            "average_generation_time_seconds": 14.701,
+            "results": [
+                {
+                    "description": "example_description.txt",
+                    "status": "success",
+                    "generation_time_seconds": 14.701,
+                    "parse_error": null,
+                    "error": null,
+                    "pdf_path": "benchmark_outputs/qwen-3_8-27b_outputs/example_description_documentation.pdf"
+                }
+            ]
+        }
+    ]
+}

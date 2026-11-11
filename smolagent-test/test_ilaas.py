@@ -1,5 +1,7 @@
 import os
 import requests
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_URL = "https://llm.ilaas.fr/v1"
 API_KEY = os.environ["ILAAS_API_KEY"]
